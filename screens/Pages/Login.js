@@ -3,6 +3,8 @@ import { Alert, Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } fro
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase.js';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 export default function Login() {
     const navigation = useNavigation();
@@ -15,8 +17,9 @@ export default function Login() {
         setLoading(true);
         try {
             const userCred = await signInWithEmailAndPassword(auth, email, password);
+            AsyncStorage.setItem('user', JSON.stringify(userCred.user));
             Alert.alert("Signin complete");
-            navigation.navigate("Watchlist")
+            navigation.navigate("Watchlist");
         } catch(err) {
             Alert.alert(err.code);
         }

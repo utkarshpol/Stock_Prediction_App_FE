@@ -1,41 +1,19 @@
-import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
-import Watchlist from '../components/Watchlist.js';
-import WatchListContent from '../components/WatchListContent.js';
-import Navigation from '../components/Navigation.js';
+import React from 'react';
+import { View, StyleSheet, Text } from 'react-native';
+import Watchlist from '../components/watchlist_components/Watchlist.js';
+import WatchlistContent from '../components/watchlist_components/WatchListContent.js';
+import Navigation from '../components/common_components/Navigation.js';
+import { WatchlistProvider } from '../context_providers/WatchlistProvider.js';
 
-const WatchlistScreen = ({user}) => {
-  const [watchlists, setWatchlists] = useState(Array.from({ length: 10 }, (_, index) => `Watchlist${index + 1}`));
-  const [selectedWatchlist, setSelectedWatchlist] = useState(watchlists[0]);
-
-  const handleSelectWatchlist = (watchlist) => {
-    setSelectedWatchlist(watchlist);
-  };
-
-  const handleDeleteWatchlist = (indexToDelete) => {
-    const updatedWatchlists = watchlists.filter((_, index) => index !== indexToDelete);
-    setWatchlists(updatedWatchlists);
-    if (selectedWatchlist === watchlists[indexToDelete]) {
-      setSelectedWatchlist(updatedWatchlists[0] || '');
-    }
-  };
-
+const WatchlistScreen = ({ user }) => {
   return (
+    <WatchlistProvider user={user}>
       <View style={styles.container}>
-        <Watchlist
-          watchlists={watchlists}
-          onSelectWatchlist={handleSelectWatchlist}
-          onDeleteWatchlist={handleDeleteWatchlist}
-        />
-        {selectedWatchlist ? (
-          <WatchListContent selectedWatchlist={selectedWatchlist} />
-        ) : (
-          <View style={styles.noWatchlistContainer}>
-            <Text style={styles.noWatchlistText}>No watchlists available</Text>
-          </View>
-        )}
-        <Navigation currentSection={'Watchlist'}/>
+        <Watchlist />
+        <WatchlistContent />
+        <Navigation currentSection={'Watchlist'} />
       </View>
+    </WatchlistProvider>
   );
 };
 

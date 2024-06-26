@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import HotTopics from '../components/HotTopics'; // Ensure the path is correct
-import Navigation from '../components/Navigation'; // Ensure the path is correct
+import HotTopics from '../components/news_component/HotTopics.js'; // Ensure the path is correct
+import Navigation from '../components/common_components/Navigation.js'; // Ensure the path is correct
 
 const TopNews = ({user}) => {
   const [currentSection, setCurrentSection] = useState('TopNews');

@@ -1,22 +1,21 @@
-// App.js
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Signup from './screens/Pages/Signup.js';
-import Login from './screens/Pages/Login.js';
-import StockDetails from './screens/components/StockDetails.js';
-import WatchlistScreen from './screens/Pages/WatchlistScreen.js';
-import Profile from './screens/Pages/Profile.js';
-import TopNews from './screens/Pages/TopNews.js';
-import TopPicksScreen from './screens/Pages/TopPicksScreen.js';
-import ProtectedComponent from './screens/protected/ProtectedComponent.js';
+import Signup from './screens/Pages/Signup';
+import Login from './screens/Pages/Login';
+// import StockDetails from './screens/components/StockDetails';
+import WatchlistScreen from './screens/Pages/WatchlistScreen';
+import Profile from './screens/Pages/Profile';
+import TopNews from './screens/Pages/TopNews';
+import TopPicksScreen from './screens/Pages/TopPicksScreen';
+import ProtectedComponent from './screens/protected/ProtectedComponent';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Signup" screenOptions={{ headerShown: false }}>
+      <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Signup" component={Signup} />
         <Stack.Screen name="Watchlist">
@@ -47,13 +46,13 @@ export default function App() {
             </ProtectedComponent>
           )}
         </Stack.Screen>
-        <Stack.Screen name="StockDetails">
+        {/* <Stack.Screen name="StockDetails">
           {props => (
             <ProtectedComponent>
               <StockDetails {...props} />
             </ProtectedComponent>
           )}
-        </Stack.Screen>
+        </Stack.Screen> */}
       </Stack.Navigator>
     </NavigationContainer>
   );

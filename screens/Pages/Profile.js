@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import UserData from '../components/UserData';
-import Navigation from '../components/Navigation';
+import UserData from '../components/user_components/UserData.js';
+import Navigation from '../components/common_components/Navigation.js';
 import { useNavigation } from '@react-navigation/native';
 import { auth } from '../../firebase.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Profile = ({user}) => {
 
@@ -13,9 +14,10 @@ const Profile = ({user}) => {
 
   const handleLogout = async () => {
     await auth.signOut();
+    await AsyncStorage.clear();
     navigation.reset({
       index: 0,
-      routes: [{name: "Login"}]
+      routes: [{name: "Login"}],
     });
     navigation.navigate("Login");
   };
@@ -27,8 +29,8 @@ const Profile = ({user}) => {
   return (
       <View style={styles.container}>
         <UserData
-          username={user?.email}
-          email={user?.email}
+          username={user.email}
+          email={user.email}
           onChangePassword={handleChangePassword}
           onLogout={handleLogout}
         />

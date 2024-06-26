@@ -30,9 +30,14 @@ const Signup = () => {
                 email: email,
                 password: password
             }
-            axios.post('http://localhost:5000/auth/signup', credentials).then((res) => {
+            console.log("this has reached here 1");
+            axios.post('http://192.168.1.13:3000/api/signup', credentials).then((res) => {
+                console.log("this has reached here 2");
                 Alert.alert(res.data.message);
+            }).catch((err)=>{
+                console.log(err);
             });
+            console.log("this has reached here 3");
             setLoading(false);
             navigation.navigate('Login'); // Navigate to Login screen after successful signup
         } catch(err) {

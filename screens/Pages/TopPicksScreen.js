@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import TopPicks from '../components/TopPicks'; // Ensure the path is correct
-import Navigation from '../components/Navigation'; // Ensure the path is correct
+import TopPicks from '../components/top_stocks_components/TopPicks.js'; // Ensure the path is correct
+import Navigation from '../components/common_components/Navigation.js'; // Ensure the path is correct
 
 const TopPicksScreen = ({user}) => {
   const [currentSection, setCurrentSection] = useState('TopPicksScreen');
