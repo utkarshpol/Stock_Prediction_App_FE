@@ -10,37 +10,30 @@ import { NseIndia } from 'stock-nse-india';
 
 const nseIndia = new NseIndia();
 
-// Example stock data, replace this with actual data fetching
-const stockData = [
-  { name: 'Stock A' },
-  { name: 'Stock B' },
-  { name: 'Stock C' },
-  // Add more stock data here...
-];
-
 const WatchlistContent = () => {
   const { watchlists, selectedWatchlist, setWatchlists } = useContext(WatchlistContext);
   const [items, setItems] = useState([]);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [stocks, setStocks] = useState(stockData);
+  const [stocks, setStocks] = useState([]);
 
   const getStockList = async () => {
-    const list = await AsyncStorage.getItem('stock-list');
-    if (list) {
-      setStocks(JSON.parse(list));
-    } else {
-      axios.get('http://192.168.1.13:3000/api/get-stocks').then(async (res) => {
+    try {
+      const list = await AsyncStorage.getItem('stock-list');
+      if (list) {
+        setStocks(JSON.parse(list));
+      } else {
+        const res = await axios.get('http://192.168.1.13:3000/api/get-stocks');
         if (res.status === 200) {
-          const fetchedList = res.data.list;
+          const fetchedList = res.data.list.map(symbol => ({ name: symbol }));
           await AsyncStorage.setItem('stock-list', JSON.stringify(fetchedList));
           setStocks(fetchedList);
         } else {
           Alert.alert("Some unexpected error occurred");
         }
-      }).catch((err) => {
-        console.log(err);
-        Alert.alert("Some unexpected error occurred");
-      });
+      }
+    } catch (err) {
+      console.log(err);
+      Alert.alert("Some unexpected error occurred");
     }
   };
 
@@ -50,27 +43,9 @@ const WatchlistContent = () => {
     }
   }, [watchlists, selectedWatchlist]);
 
-  // useEffect(() => {
-  //   getStockList();
-  // }, []);
-
-  // const addItem = async (stock) => {
-  //   try {
-  //     const details = await nseIndia.getEquityDetails(stock.name);
-  //     const stockPrice = details.priceInfo.lastPrice;
-  //     const newItem = { name: stock.name, currPrice: stockPrice, targetDays: 1, targetPrice: 100 };
-  //     const updatedItems = [...items, newItem];
-  //     const updatedWatchlists = [...watchlists];
-  //     updatedWatchlists[selectedWatchlist] = updatedItems;
-  //     setItems(updatedItems);
-  //     setWatchlists(updatedWatchlists);
-  //     setModalVisible(false);
-  //   } catch (error) {
-  //     console.log(error);
-  //     console.log(stocks.length);
-  //     Alert.alert("Some unexpected error occurred");
-  //   }
-  // };
+  useEffect(() => {
+    getStockList();
+  }, []);
 
   const addItem = async (stock) => {
     try {
@@ -94,7 +69,6 @@ const WatchlistContent = () => {
       Alert.alert("Some unexpected error occurred");
     }
   };
-  
 
   const deleteItem = (index) => {
     const updatedItems = items.filter((_, i) => i !== index);
