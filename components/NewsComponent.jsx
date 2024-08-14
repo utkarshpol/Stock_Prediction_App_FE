@@ -1,8 +1,11 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import NewsCard from './NewsCard';
+import axios from 'axios';
+import auth from '../firebase.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const newsData = [
+const initialNewsData = [
   { heading: 'Market Update', body: 'The market today saw a significant increase in trading volume...' },
   { heading: 'Tech Stocks Rally', body: 'Technology stocks have seen a considerable rise...' },
   { heading: 'Economic Outlook', body: 'Experts are predicting a stable economic growth for the next quarter...' },
@@ -12,6 +15,36 @@ const newsData = [
 ];
 
 const NewsComponent = () => {
+
+  const [token, setToken] = useState();
+  const [config, setConfig] = useState();
+  const [newsData, setNewsData] = useState(initialNewsData)
+
+  useEffect(() => {
+    const checkUser = async () => {
+      auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          const tok = await AsyncStorage.getItem('cookie');
+          setToken(tok);
+          setConfig({ headers: { Authorization: `Bearer ${token}` } })
+        } else {
+          auth.signOut();
+          await AsyncStorage.clear();
+          navigation.navigate("Login");
+        }
+      })
+    }
+    checkUser();
+
+    axios.get('http://192.168.1.13:3000/api/get-best-news', config).then((res)=>{
+      console.log(res.data.message);
+      if(res.status === 200) setNewsData(res.data.bestNews);
+    }).catch((err)=>{
+      console.log(err);
+    })
+  }, [])
+
+
   return (
     <ScrollView style={styles.container}>
       {newsData.map((news, index) => (

@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Button } from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import auth from '../firebase.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 const UserInfo = ({ username, email }) => {
+  const navigation = useNavigation();
   const [forgotPasswordVisible, setForgotPasswordVisible] = useState(false);
   const [changeUsernameVisible, setChangeUsernameVisible] = useState(false);
 
-  const logout = () => {
-    // Handle logout logic
+  const logout = async () => {
+    auth.signOut();
+    await AsyncStorage.clear();
+    navigation.navigate("Login");
     alert('User logged out');
   };
 

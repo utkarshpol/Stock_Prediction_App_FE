@@ -1,7 +1,9 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StatusBar, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StatusBar, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import auth from '../firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 export default function Signin() {
   const navigation = useNavigation();
@@ -9,20 +11,24 @@ export default function Signin() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSignin = () => {
-    // Handle sign-in logic here
+  const handleSignin = async () => {
     console.log('Email:', email);
     console.log('Password:', password);
     console.log('Confirm Password:', confirmPassword);
     if(password.length<8) return Alert.alert("minimum password length must be 8");
     if(password != confirmPassword) return Alert.alert("password not equal to comfirm password");
-    // setup firebase signup here
-    axios.post('http://192.168.1.13:3000/api/create-user',{emailId: email, password: password}).then((res)=>{
-      if(res.status === 200) navigation.navigate("Login");
-      console.log(res.data.message);
-    }).catch((err)=>{
-      console.log(err);
-    })
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCred.user;
+    if(user){
+      axios.post('http://192.168.1.13:3000/api/create-user',{emailId: email, password: password}).then((res)=>{
+        if(res.status === 200) navigation.navigate("Login");
+        console.log(res.data.message);
+      }).catch((err)=>{
+        console.log(err);
+      })
+    } else {
+      Alert.alert("some unexpected error occored");
+    }
   };
 
   const handleGoogleSignin = () => {
@@ -67,7 +73,7 @@ export default function Signin() {
         <Text style={styles.buttonText}>Sign Up with Google</Text>
       </TouchableOpacity>
       <Text style={styles.footerText}>
-        Already have an account? <Text style={styles.footerLink}>Login</Text>
+        Already have an account? <TouchableOpacity onPress={()=>{navigation.navigate("Login")}}><Text style={styles.footerLink}>Login</Text></TouchableOpacity>
       </Text>
     </View>
   );

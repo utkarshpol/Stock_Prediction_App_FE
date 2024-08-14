@@ -1,11 +1,26 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { NseIndia } from 'stock-nse-india';
+
+const nseIndia = new NseIndia()
 
 const StockCard = ({ stockName, stockSymbol, currentStockValue, predictedPriceArray }) => {
   const [predictedDays, setPredictedDays] = useState(1);
-
+  const [stockPrice, setStockPrice] = useState(currentStockValue);
   // Ensure predictedPriceArray is defined and has enough elements
   const predictedPrice = (predictedPriceArray && predictedPriceArray[predictedDays - 1]) || 'N/A';
+
+  const fetchPrice = async ()=>{
+    try{
+      const details = await nseIndia.getEquityDetails(stockSymbol);
+      setStockPrice(details.priceInfo.lastPrice);
+      console.log("Price updated");
+    } catch(err){
+      console.log("err", err);
+    }
+  }
+
+  // const interval = setInterval(fetchPrice, 30000);
 
   const incrementDays = () => {
     if (predictedDays < 7) {
@@ -13,11 +28,13 @@ const StockCard = ({ stockName, stockSymbol, currentStockValue, predictedPriceAr
     }
   };
 
+
+
   return (
     <View style={styles.card}>
       <Text style={styles.stockName}>{stockName}</Text>
       <Text style={styles.stockSymbol}>{stockSymbol}</Text>
-      <Text style={styles.stockValue}>Current Value: ${currentStockValue}</Text>
+      <Text style={styles.stockValue}>Current Value: ${stockPrice}</Text>
       <Text style={styles.predictedPrice}>Predicted Price: ${predictedPrice}</Text>
       <TouchableOpacity style={styles.button} onPress={incrementDays}>
         <Text style={styles.buttonText}>Predicted Days: {predictedDays}</Text>

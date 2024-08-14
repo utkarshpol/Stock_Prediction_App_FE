@@ -3,29 +3,35 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StatusBar, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import auth from '../firebase.js'
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export default function Login() {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    // Handle login logic here
-    console.log('Email:', email);
-    console.log('Password:', password);
-    axios.post('http://192.168.1.13:3000/api/login',{emailId: email, password: password}).then((res)=>{
-      if(res.status === 200){
-        // setup firebase login here
-        AsyncStorage.setItem('cookie',res.data.cookie);
-        navigation.navigate("WatchlistPage");
-      } else {
-        Alert.alert(res.data.message);
-      }
-      console.log(res.data.message);
-    }).catch((err)=>{
-      console.log(err);
-      Alert.alert("some unexpected error occored");
-    })
+  const handleLogin = async () => {
+    console.log(email, password);
+    const userCred = await signInWithEmailAndPassword(auth, email, password);
+    console.log(email, password);
+    const user = userCred.user;
+    console.log(user.email);
+    if(user) {
+      await AsyncStorage.setItem('user', JSON.stringify(user));
+      axios.post('http://192.168.246.8:3000/api/login',{emailId: email, password: password}).then(async (res)=>{
+        if(res.status === 200){
+          await AsyncStorage.setItem('cookie',res.data.cookie);
+          navigation.navigate("WatchlistPage");
+        } else {
+          Alert.alert(res.data.message);
+        }
+        console.log(res.data.message);
+      }).catch((err)=>{
+        console.log(err);
+        Alert.alert("some unexpected error occored");
+      })
+    } else Alert.alert("Something is wrong");
   };
 
   const handleGoogleLogin = () => {
@@ -62,7 +68,7 @@ export default function Login() {
         <Text style={styles.buttonText}>Login with Google</Text>
       </TouchableOpacity>
       <Text style={styles.footerText}>
-        Don't have an account? <Text style={styles.footerLink}>Sign Up</Text>
+        Don't have an account? <TouchableOpacity onPress={()=>{navigation.navigate("Signin")}}><Text style={styles.footerLink}>Sign Up</Text></TouchableOpacity>
       </Text>
     </View>
   );

@@ -6,6 +6,8 @@ import NavigationComponent from '../components/NavigationComponent';
 export default function TopStocks() {
   const [currentPage, setCurrentPage] = useState('Market Movers');
 
+  
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
